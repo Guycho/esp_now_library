@@ -8,9 +8,9 @@
 
 class ESPNowHandler {
    public:
-    ESPNowHandler(const uint8_t *peerMacAddress);
-    void init();
-    void send_data(const String &data);
+    ESPNowHandler(const uint8_t *peerMacAddress, bool useLR = false, bool printDebug = false);
+    bool init();
+    bool send_data(const String &data);
     void on_data_sent(const uint8_t *mac_addr, esp_now_send_status_t status);
     void on_data_recv(const uint8_t *mac_addr, const uint8_t *data, int data_len);
     String get_data();
@@ -22,6 +22,8 @@ class ESPNowHandler {
     static ESPNowHandler *instance;
 
     String m_data;
+    bool m_useLR;
+    bool m_printDebug;
 };
 
 #endif  // ESPNOWHANDLER_H

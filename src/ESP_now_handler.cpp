@@ -2,19 +2,23 @@
 
 ESPNowHandler *ESPNowHandler::instance = nullptr;
 
-ESPNowHandler::ESPNowHandler(const uint8_t *peerMacAddress) {
+ESPNowHandler::ESPNowHandler(const uint8_t *peerMacAddress, bool useLR, bool printDebug) {
     memcpy(this->peerMacAddress, peerMacAddress, 6);
     instance = this;
+    m_useLR = useLR;
+    m_printDebug = printDebug;
 }
 
-void ESPNowHandler::init() {
+bool ESPNowHandler::init() {
     WiFi.mode(WIFI_STA);
-    esp_wifi_set_channel(1, WIFI_SECOND_CHAN_NONE);
-    esp_wifi_set_protocol(WIFI_IF_STA, WIFI_PROTOCOL_11B | WIFI_PROTOCOL_11G | WIFI_PROTOCOL_11N | WIFI_PROTOCOL_LR);
+    if (m_useLR) {
+        esp_wifi_set_protocol(WIFI_IF_STA, WIFI_PROTOCOL_LR);
+    } else
+        esp_wifi_set_protocol(WIFI_IF_STA,
+          WIFI_PROTOCOL_11B | WIFI_PROTOCOL_11G | WIFI_PROTOCOL_11N);
 
     if (esp_now_init() != ESP_OK) {
-        Serial.println("Error initializing ESP-NOW");
-        return;
+        return false;
     }
 
     esp_now_register_send_cb(on_data_sent_static);
@@ -27,26 +31,21 @@ void ESPNowHandler::init() {
     peerInfo.encrypt = false;
 
     if (esp_now_add_peer(&peerInfo) != ESP_OK) {
-        Serial.println("Failed to add peer");
-        return;
+        return false;
     }
+    return true;
 }
 
-void ESPNowHandler::send_data(const String &data) {
+bool ESPNowHandler::send_data(const String &data) {
     esp_err_t result = esp_now_send(peerMacAddress, (uint8_t *)data.c_str(), data.length());
 
-    if (result == ESP_OK) {
-        // Serial.println("Sent with success");
-    } else {
-        const char *errorName = esp_err_to_name(result);
-        // Serial.print("Error sending data: ");
-        // Serial.println(errorName);
+    if (result != ESP_OK) {
+        return false;
     }
+    return true;
 }
 
 void ESPNowHandler::on_data_sent(const uint8_t *mac_addr, esp_now_send_status_t status) {
-    // Serial.print("Last Packet Send Status: ");
-    // Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail");
 }
 
 void ESPNowHandler::on_data_recv(const uint8_t *mac_addr, const uint8_t *data, int data_len) {
@@ -61,7 +60,8 @@ void ESPNowHandler::on_data_sent_static(const uint8_t *mac_addr, esp_now_send_st
     }
 }
 
-void ESPNowHandler::on_data_recv_static(const uint8_t *mac_addr, const uint8_t *data, int data_len) {
+void ESPNowHandler::on_data_recv_static(const uint8_t *mac_addr, const uint8_t *data,
+  int data_len) {
     if (instance) {
         instance->on_data_recv(mac_addr, data, data_len);
     }
