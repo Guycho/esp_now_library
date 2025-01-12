@@ -38,7 +38,10 @@ bool ESPNowHandler::init() {
 
 bool ESPNowHandler::send_data(const String &data) {
     esp_err_t result = esp_now_send(peerMacAddress, (uint8_t *)data.c_str(), data.length());
-
+    if(m_printDebug) {
+        Serial.print("Sending data: ");
+        Serial.println(data);
+    }
     if (result != ESP_OK) {
         return false;
     }
@@ -50,6 +53,10 @@ void ESPNowHandler::on_data_sent(const uint8_t *mac_addr, esp_now_send_status_t 
 
 void ESPNowHandler::on_data_recv(const uint8_t *mac_addr, const uint8_t *data, int data_len) {
     m_data = String((char *)data);
+    if (m_printDebug) {
+        Serial.print("Received data: ");
+        Serial.println(m_data);
+    }
 }
 
 String ESPNowHandler::get_data() { return m_data; }
