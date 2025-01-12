@@ -10,7 +10,7 @@ ESPNowHandler::ESPNowHandler(const uint8_t *peerMacAddress, bool useLR, bool pri
 }
 
 bool ESPNowHandler::init() {
-    WiFi.mode(WIFI_STA);
+    WiFi.mode(WIFI_MODE_APSTA);
     if (m_useLR) {
         esp_wifi_set_protocol(WIFI_IF_STA, WIFI_PROTOCOL_LR);
     } else
