@@ -59,7 +59,11 @@ void ESPNowHandler::on_data_recv(const uint8_t *mac_addr, const uint8_t *data, i
     }
 }
 
-String ESPNowHandler::get_data() { return m_data; }
+String ESPNowHandler::get_data() { 
+    String temp_data = m_data;
+    m_data = "";
+    return temp_data;
+}
 
 void ESPNowHandler::on_data_sent_static(const uint8_t *mac_addr, esp_now_send_status_t status) {
     if (instance) {
