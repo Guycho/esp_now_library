@@ -13,10 +13,10 @@ bool ESPNowHandler::init() {
     WiFi.mode(WIFI_STA);
     if (m_useLR) {
         esp_wifi_set_protocol(WIFI_IF_STA, WIFI_PROTOCOL_LR);
-    } else
+    } else{
         esp_wifi_set_protocol(WIFI_IF_STA,
           WIFI_PROTOCOL_11B | WIFI_PROTOCOL_11G | WIFI_PROTOCOL_11N);
-
+    }
     if (esp_now_init() != ESP_OK) {
         return false;
     }
