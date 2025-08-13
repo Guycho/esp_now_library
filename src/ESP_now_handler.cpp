@@ -9,7 +9,6 @@ ESPNowHandler::ESPNowHandler(const uint8_t *peerMacAddress, bool useLR, bool pri
     m_printDebug = printDebug;
 }
 
-
 ESPNowHandler::~ESPNowHandler() {
     esp_now_deinit();
     instance = nullptr;
