@@ -9,6 +9,7 @@
 class ESPNowHandler {
    public:
     ESPNowHandler(const uint8_t *peerMacAddress, bool useLR = false, bool printDebug = false);
+    ~ESPNowHandler();
     bool init();
     bool send_data(const String &data);
     void on_data_sent(const uint8_t *mac_addr, esp_now_send_status_t status);

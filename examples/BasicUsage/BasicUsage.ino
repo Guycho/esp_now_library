@@ -10,7 +10,11 @@ ESPNowHandler espNowHandler(peerMacAddress);
 
 void setup() {
     Serial.begin(115200);
-    espNowHandler.init();
+    if (!espNowHandler.init()) {
+        Serial.println("ESP-NOW init failed!");
+        while(1);
+    }
+    Serial.println("ESP-NOW initialized successfully");
 }
 
 void loop() {

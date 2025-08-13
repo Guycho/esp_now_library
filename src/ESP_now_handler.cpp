@@ -9,6 +9,11 @@ ESPNowHandler::ESPNowHandler(const uint8_t *peerMacAddress, bool useLR, bool pri
     m_printDebug = printDebug;
 }
 
+ESPNowHandler::~ESPNowHandler() {
+    esp_now_deinit();
+    instance = nullptr;
+}
+
 bool ESPNowHandler::init() {
     WiFi.mode(WIFI_STA);
     if (m_useLR) {
@@ -48,11 +53,15 @@ bool ESPNowHandler::send_data(const String &data) {
     return true;
 }
 
-void ESPNowHandler::on_data_sent(const uint8_t *mac_addr, esp_now_send_status_t status) {}
+void ESPNowHandler::on_data_sent(const uint8_t *mac_addr, esp_now_send_status_t status) {
+    if (m_printDebug) {
+        Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Send OK" : "Send FAILED");
+    }
+}
 
 void ESPNowHandler::on_data_recv(const esp_now_recv_info_t *recv_info, const uint8_t *data,
   int data_len) {
-    m_data = String((char *)data);
+    m_data = String((char *)data, data_len);
     if (m_printDebug) {
         Serial.print("Received data: ");
         Serial.println(m_data);
@@ -60,8 +69,10 @@ void ESPNowHandler::on_data_recv(const esp_now_recv_info_t *recv_info, const uin
 }
 
 String ESPNowHandler::get_data() {
+    noInterrupts();
     String temp_data = m_data;
     m_data = "";
+    interrupts();
     return temp_data;
 }
 
