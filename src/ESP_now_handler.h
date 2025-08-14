@@ -13,14 +13,13 @@ class ESPNowHandler {
     bool init();
     bool send_data(const String &data);
     void on_data_sent(const uint8_t *mac_addr, esp_now_send_status_t status);
-    void on_data_recv(const esp_now_recv_info_t *recv_info, const uint8_t *data, int data_len);
+    void on_data_recv(const uint8_t *mac_addr, const uint8_t *data, int data_len);
     String get_data();
 
    private:
     uint8_t peerMacAddress[6];
     static void on_data_sent_static(const uint8_t *mac_addr, esp_now_send_status_t status);
-    static void on_data_recv_static(const esp_now_recv_info_t *recv_info, const uint8_t *data,
-      int data_len);
+    static void on_data_recv_static(const uint8_t *mac_addr, const uint8_t *data, int data_len);
     static ESPNowHandler *instance;
 
     String m_data;

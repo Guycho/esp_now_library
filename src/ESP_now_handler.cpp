@@ -59,8 +59,7 @@ void ESPNowHandler::on_data_sent(const uint8_t *mac_addr, esp_now_send_status_t 
     }
 }
 
-void ESPNowHandler::on_data_recv(const esp_now_recv_info_t *recv_info, const uint8_t *data,
-  int data_len) {
+void ESPNowHandler::on_data_recv(const uint8_t *mac_addr, const uint8_t *data, int data_len) {
     m_data = String((char *)data, data_len);
     if (m_printDebug) {
         Serial.print("Received data: ");
@@ -82,9 +81,8 @@ void ESPNowHandler::on_data_sent_static(const uint8_t *mac_addr, esp_now_send_st
     }
 }
 
-void ESPNowHandler::on_data_recv_static(const esp_now_recv_info_t *recv_info, const uint8_t *data,
-  int data_len) {
+void ESPNowHandler::on_data_recv_static(const uint8_t *mac_addr, const uint8_t *data, int data_len) {
     if (instance) {
-        instance->on_data_recv(recv_info, data, data_len);
+        instance->on_data_recv(mac_addr, data, data_len);
     }
 }
